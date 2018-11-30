@@ -15,10 +15,10 @@ services:
             - net
         hostname: kong
         ports:
-            - "8000:8000/tcp"
-            - "8001:8001/tcp"
-            - "8443:8443/tcp"
-            - "8444:8444/tcp"
+            - "7902:8000/tcp"
+            #- "8001:8001/tcp" # Uncomment this line to expose admin API to the public with HTTP
+            - "7903:8443/tcp"
+            #- "8444:8444/tcp" # Uncomment this line to expose admin API to the public with HTTPS
         environment:
             - "KONG_ADMIN_ACCESS_LOG=/dev/stdout"
             - "KONG_ADMIN_ERROR_LOG=/dev/stderr"
@@ -65,7 +65,7 @@ services:
         networks:
             - net
         ports:
-            - "7999:1337"
+            - "7901:1337"
         volumes:
             - "./default-users.env:/usr/share/default-users.env"
         environment:
