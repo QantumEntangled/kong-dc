@@ -40,3 +40,23 @@ To start the service run the following in the `/` root directory.
 ```Bash
 docker-compose up -d
 ```
+
+# Configuration
+
+Access the Konga GUI at `http://localhost:7901/` replacing `localhost` with the address of the host machine.
+
+Create a new user, then be sure to edit the `Base URL` and `SMTP` settings in the SETTINGS menu.
+
+Next create a new connection with the knong server with the following settings.
+
+| Parameter | Value |
+|-|-|
+| Name | Kong Container |
+| Kong Admin URL | `http://app:8001` |
+
+# Using Kong & Konga
+
+For information on how to use [Konga see here](https://github.com/pantsel/konga).
+
+For information on how to use [Kong see here](https://docs.konghq.com/).
+
