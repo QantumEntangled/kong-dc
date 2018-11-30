@@ -1,37 +1,42 @@
-## Welcome to GitHub Pages
+# Kong & Konga Docker-Compose
 
-You can use the [editor on GitHub](https://github.com/QantumEntangled/kong-dc/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Kong is easiest to use when paired with GUI management interface. This FLOSS pairing works well and can be scaled in an enterprise environment.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+*Auto-scaling is WIP and will be added soon.
 
-### Markdown
+# Setup
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
+## Token Secret
+Edit the `docker-compose.yml` file to change following line with your _Token Secret_.
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```Dockerfile
+- "TOKEN_SECRET=SuperSecretLongPhrase" # Change this before running
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+This should be something like
 
-### Jekyll Themes
+```Dockerfile
+- "TOKEN_SECRET=881da2b9000b7b9f3c62ef3750a22c5ec0f5db759ddd347fb0aab6488bf1ffc7"
+```
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/QantumEntangled/kong-dc/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+## Ports
 
-### Support or Contact
+Adjust the ports exposed on the host machine by the service in the `docker-compose.yml` file.
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+```Dockerfile
+- "8000:8000/tcp"
+- "8001:8001/tcp"
+- "8443:8443/tcp"
+- "8444:8444/tcp"
+```
+
+\* _The left number is the host machine port, the right number is the container port, the last part is the packet type allowed to pass._ `host:container/packet_type`
+
+# Starting
+
+To start the service run the following in the `/` root directory.
+
+```Bash
+docker-compose up -d
+```
