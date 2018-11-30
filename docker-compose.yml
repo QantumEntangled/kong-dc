@@ -1,0 +1,91 @@
+version: '3.7'
+services:
+    app:
+        image: kong:latest
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://kong:8001"]
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        depends_on:
+            - db
+            - postgres
+        networks: 
+            - net
+        hostname: kong
+        ports:
+            - "8000:8000/tcp"
+            - "8001:8001/tcp"
+            - "8443:8443/tcp"
+            - "8444:8444/tcp"
+        environment:
+            - "KONG_ADMIN_ACCESS_LOG=/dev/stdout"
+            - "KONG_ADMIN_ERROR_LOG=/dev/stderr"
+            - "KONG_ADMIN_LISTEN=0.0.0.0:8001"
+            - "KONG_CASSANDRA_CONTACT_POINTS=db"
+            - "KONG_DATABASE=postgres"
+            - "KONG_PG_DATABASE=kong"
+            - "KONG_PG_HOST=postgres"
+            - "KONG_PG_PASSWORD=kong"
+            - "KONG_PG_USER=kong"
+            - "KONG_PROXY_ACCESS_LOG=/dev/stdout"
+            - "KONG_PROXY_ERROR_LOG=/dev/stderr"
+        command: kong start --run-migrations -vv
+
+    db:
+        image: cassandra:3
+        restart: unless-stopped
+        networks: 
+            - net
+
+    postgres:
+        image: postgres:9.6
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "${KONG_PG_USER:-kong}"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+        restart: unless-stopped
+        networks: 
+            - net
+        ports:
+            - "5432:5432"
+        environment:
+            - "POSTGRES_USER=kong"
+            - "POSTGRES_PASSWORD=kong"
+            - "POSTGRES_DB=kong"
+
+    gui:
+        image: pantsel/konga:latest
+        restart: unless-stopped
+        depends_on:
+            - app
+            - kongadb
+        networks:
+            - net
+        ports:
+            - "7999:1337"
+        volumes:
+            - "./default-users.env:/usr/share/default-users.env"
+        environment:
+            - "PORT=1337"
+            #- "NODE_ENV=production"
+            - "DB_ADAPTER=postgres"
+            - "DB_HOST=kongadb"
+            - "DB_USER=kong"
+            - "DB_DATABASE=konga_db"
+            - "TOKEN_SECRET=SuperSecretLongPhrase" # Change this before running
+            - "KONGA_SEED_USER_DATA_SOURCE_FILE=/usr/share/default-users.env"
+
+    kongadb:
+        image: postgres:9.6
+        restart: unless-stopped
+        networks: 
+            - net
+        environment:
+            - "POSTGRES_USER=kong"
+            - "POSTGRES_DB=konga_db"
+
+networks: 
+    net:
